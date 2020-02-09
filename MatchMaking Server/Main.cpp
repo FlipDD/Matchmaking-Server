@@ -1,4 +1,4 @@
-	#include <winsock2.h>
+#include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iostream>
 #include <thread>
@@ -7,7 +7,7 @@
 #include <list>
 
 using namespace std;
-#define MAXPENDINGCON 8
+#define MAXPENDINGCON 4
 #define RCVBUFSIZE 1024
 vector<SOCKET> clients;
 
@@ -33,9 +33,10 @@ int sessionCount = 0;
 
 void InterpreteMessage(char* buffer, PlayerInfo pInfo)
 {
-	string temp;
+	string temp = "";
 	vector <string> params;
 	char cmd = 0;
+
 	for (int i = 0; buffer[i] != '#'; i++)
 	{
 		if ((buffer[i] == '|') && (cmd == 0))
@@ -55,32 +56,26 @@ void InterpreteMessage(char* buffer, PlayerInfo pInfo)
 	}
 	if (cmd == 'g')
 	{
-	
+		// TO CHECK
+		//string message = "s|";
 		if (sessions.size() > 0)
 		{
 			for (list<SessionInfo>::iterator it = sessions.begin();it != sessions.end(); it++)
 			{
-				string message = "s|" +to_string( it->id) + "|" +
+				string message = "s|" + to_string(it->id) + "|" +
 					it->name + "|" + it->serverip +	"|" +
 					to_string(it->serverport) + "|";
 
-				if (send(pInfo.client, message.c_str(),
-					message.length(), 0) == SOCKET_ERROR)
-				{
+				if (send(pInfo.client, message.c_str(), message.length(), 0) == SOCKET_ERROR)
 					cout << "send failed!" << endl;
-				}
-
 			}
 		}
 		else
 		{
 			string message = "s|null";
 
-			if (send(pInfo.client, message.c_str(),
-				message.length(), 0) == SOCKET_ERROR)
-			{
+			if (send(pInfo.client, message.c_str(), message.length(), 0) == SOCKET_ERROR)
 				cout << "send failed!" << endl;
-			}
 		}
 	}
 	else if (cmd == 'h')
@@ -93,11 +88,8 @@ void InterpreteMessage(char* buffer, PlayerInfo pInfo)
 		sessions.push_back(session);
 
 		string message = "o|" + params.at(2) + "|";
-		if (send(pInfo.client, message.c_str(),
-			message.length(), 0) == SOCKET_ERROR)
-		{
+		if (send(pInfo.client, message.c_str(), message.length(), 0) == SOCKET_ERROR)
 			cout << "send failed!" << endl;
-		}
 	}
 	else
 	{
@@ -116,7 +108,6 @@ void HandleClientThread(PlayerInfo pInfo)
 	char buffer[RCVBUFSIZE];
 	string clientmsg;
 
-
 	while (recv(pInfo.client, buffer, sizeof(buffer), 0) > 0)
 	{
 		cout << buffer << endl;
@@ -128,9 +119,7 @@ void HandleClientThread(PlayerInfo pInfo)
 	{
 		cout << "closesocket() failed" << endl;
 	}
-
 }
-
 
 int main() {
 	SOCKET server;
@@ -147,6 +136,7 @@ int main() {
 		cout << "socket() failed" << endl;
 		exit(EXIT_FAILURE);
 	}
+
 	memset(&server_addr, 0, sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -162,7 +152,7 @@ int main() {
 		cout << "listen failed" << endl;
 		exit(EXIT_FAILURE);
 	}
-	cout << "Server Survived" << endl;
+	cout << "Server is Online" << endl;
 
 	while (true)
 	{
@@ -170,10 +160,12 @@ int main() {
 		int clientlen = sizeof(client_addr);
 
 		if ((client = accept(server, (struct sockaddr*) & client_addr, &clientlen)) == INVALID_SOCKET)
+			//|| playerCount >= 4)
 		{
 			cout << "accept() failed" << endl;
 		}
 		else {
+
 			char addrstr[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &(client_addr.sin_addr), addrstr, INET_ADDRSTRLEN);
 			cout << "Connection from " << addrstr << endl;
@@ -183,9 +175,6 @@ int main() {
 			pInfo.id = playerCount++;
 			players.push_back(pInfo);
 
-
-
-			//clients.push_back(client);
 			thread* c = new std::thread(HandleClientThread, pInfo);
 		}
 

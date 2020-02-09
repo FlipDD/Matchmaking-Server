@@ -1,0 +1,10 @@
+﻿  Main.cpp
+C:\Users\tester\source\repos\MatchMaking Server\MatchMaking Server\Main.cpp(69,8): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\tester\source\repos\MatchMaking Server\MatchMaking Server\Main.cpp(77,7): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\tester\source\repos\MatchMaking Server\MatchMaking Server\Main.cpp(91,6): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  Generating code
+  0 of 337 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  MatchMaking Server.vcxproj -> C:\Users\tester\source\repos\MatchMaking Server\x64\Release\MatchMaking Server.exe
